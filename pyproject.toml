@@ -31,6 +31,13 @@ dependencies = [ # fmt: off
   "ipykernel", # Jupyter kernel for notebooks
   "scikit-learn", # Essential machine learning library (models, preprocessing, metrics)
   "pre-commit>=4.5.1",
+  "feedparser>=6.0.12",
+  "newspaper3k>=0.2.8",
+  "requests>=2.32.5",
+  "beautifulsoup4>=4.14.3",
+  "schedule>=1.2.2",
+  "lxml>=6.0.2",
+  "lxml-html-clean>=0.4.4",
 ]  # fmt: on
 
 [project.urls]

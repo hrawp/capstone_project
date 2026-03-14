@@ -1,16 +1,13 @@
 # mkdocs.yml
 # Configuration file for MkDocs (Automated project documentation generator)
 
-# TODO: Change denisecase to your GitHub username (use CTRL F to find all instances)
-# TODO: Change applied-ml-template to your repository name (use CTRL F to find all instances)
-# TODO: Update site_description
-# TODO: Update site_author
 
-site_name: Applied ML Project
-site_url: https://denisecase.github.io/applied-ml-template/
-repo_url: https://github.com/denisecase/applied-ml-template
-site_description: Professional applied ML project
-site_author: Denise Case
+
+site_name: Capstone Project
+site_url: https://hrawp.github.io/capstone_project/
+repo_url: https://github.com/hrawp/capstone_project 
+site_description: An Analytic Review of News Articles Covering the Israel-US War with Ira
+site_author: Aaron Pelton
 docs_dir: docs
 site_dir: site
 

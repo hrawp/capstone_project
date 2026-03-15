@@ -21,8 +21,6 @@ csv_file = "iran_war_complete_articles.csv"
 # and archive article text filtering
 keywords = [
     "iran",
-    "war",
-    "supreme",
     "middle east",
     "israel",
     "airstrike",

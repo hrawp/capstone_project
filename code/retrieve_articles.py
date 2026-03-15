@@ -185,19 +185,82 @@ def page_date_from_html(url: str, publisher: str) -> str:
     return extract_date_from_url(url)
 
 
-def extract_article(url: str, publisher: str, rss_date=None) -> dict:
+def extract_bbc_author(soup):
     """
-    Download and parse an article.
+    Extract BBC author/byline using multiple fallback patterns.
+    """
+    # Meta tags first
+    meta_candidates = [
+        ("meta", {"name": "byl"}, "content"),
+        ("meta", {"property": "article:author"}, "content"),
+        ("meta", {"name": "article:author"}, "content"),
+    ]
 
-    Returns:
-    {
-        "success": bool,
-        "title": str,
-        "author": str,
-        "published_date": str,
-        "full_text": str
-    }
+    for tag_name, attrs, attr_name in meta_candidates:
+        tag = soup.find(tag_name, attrs)
+        if tag and tag.get(attr_name):
+            return tag.get(attr_name).replace("By ", "").strip()
+
+    # Broader visible byline search
+    byline_selectors = [
+        '[data-testid*="byline"]',
+        '[data-component*="byline"]',
+        '[class*="Contributor"]',
+        '[class*="byline"]',
+    ]
+
+    for selector in byline_selectors:
+        tags = soup.select(selector)
+        for tag in tags:
+            text = tag.get_text(" ", strip=True)
+            if text and len(text.split()) <= 12:
+                return text.replace("By ", "").strip()
+
+    return "Unknown"
+
+
+def extract_bbc_full_text(soup):
     """
+    Extract BBC article text using broader paragraph fallbacks.
+    """
+    selectors = [
+        '[data-component="text-block"] p',
+        '[data-component="text-block"]',
+        'article [data-component="text-block"]',
+        'main article p',
+        'article p',
+        'main p',
+    ]
+
+    best_paragraphs = []
+
+    for selector in selectors:
+        tags = soup.select(selector)
+        paragraphs = []
+
+        for tag in tags:
+            text = tag.get_text(" ", strip=True)
+
+            # Skip very short junk
+            if text and len(text.split()) >= 5:
+                paragraphs.append(text)
+
+        # Keep the selector that yields the most text
+        if len(" ".join(paragraphs).split()) > len(" ".join(best_paragraphs).split()):
+            best_paragraphs = paragraphs
+
+    # Remove duplicates while preserving order
+    seen = set()
+    cleaned = []
+    for p in best_paragraphs:
+        if p not in seen:
+            cleaned.append(p)
+            seen.add(p)
+
+    return "\n\n".join(cleaned)
+
+
+def extract_article(url: str, publisher: str, rss_date=None) -> dict:
     if not is_valid_url(url):
         return {
             "success": False,
@@ -218,7 +281,22 @@ def extract_article(url: str, publisher: str, rss_date=None) -> dict:
         full_text = article.text or ""
         author = ", ".join(article.authors) if article.authors else "Unknown"
 
-        # Prefer RSS date when available, otherwise try page HTML, then URL
+        # Fetch page HTML once for fallbacks
+        resp = requests.get(url, headers=headers, timeout=10)
+        soup = BeautifulSoup(resp.text, "html.parser")
+
+        if publisher == "BBC":
+            # Better author fallback
+            if author == "Unknown":
+                author = extract_bbc_author(soup)
+
+            # Better full-text fallback
+            bbc_full_text = extract_bbc_full_text(soup)
+
+            # Always use whichever version is longer
+            if len(bbc_full_text.split()) > len(full_text.split()):
+                full_text = bbc_full_text
+
         published_date = normalize_to_day(rss_date)
         if published_date == "Unknown":
             published_date = page_date_from_html(url, publisher)

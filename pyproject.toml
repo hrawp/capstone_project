@@ -38,6 +38,7 @@ dependencies = [ # fmt: off
   "schedule>=1.2.2",
   "lxml>=6.0.2",
   "lxml-html-clean>=0.4.4",
+  "ftfy>=6.3.1",
 ]  # fmt: on
 
 [project.urls]

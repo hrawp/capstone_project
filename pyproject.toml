@@ -39,6 +39,8 @@ dependencies = [ # fmt: off
   "lxml>=6.0.2",
   "lxml-html-clean>=0.4.4",
   "ftfy>=6.3.1",
+  "transformers>=5.3.0",
+  "torch>=2.10.0",
 ]  # fmt: on
 
 [project.urls]

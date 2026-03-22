@@ -2,6 +2,7 @@ from pathlib import Path
 import re
 import pandas as pd
 import unicodedata
+from urllib.parse import urlsplit, urlunsplit, parse_qsl, urlencode
 
 try:
     import ftfy
@@ -545,6 +546,111 @@ def update_fox_lengths(df: pd.DataFrame) -> pd.DataFrame:
 
 
 # =========================
+# Short and Half text
+# =========================
+
+
+def truncate_text_by_words(text, max_words):
+    if pd.isna(text):
+        return pd.NA
+
+    text = str(text).strip()
+    if not text:
+        return pd.NA
+
+    words = re.findall(r"\b\w+(?:[-']\w+)*\b", text, flags=re.UNICODE)
+
+    if len(words) <= max_words:
+        return text
+
+    return " ".join(words[:max_words])
+
+
+# =========================
+# Normalize article URLs
+# =========================
+
+
+def canonicalize_link(url):
+    """
+    Normalize article URLs so tracking/query variants collapse to one canonical link.
+    """
+    if pd.isna(url):
+        return pd.NA
+
+    url = str(url).strip()
+    if not url:
+        return pd.NA
+
+    parts = urlsplit(url)
+
+    scheme = parts.scheme.lower()
+    netloc = parts.netloc.lower()
+    path = parts.path.rstrip("/") if parts.path != "/" else parts.path
+
+    drop_params = {
+        "traffic_source",
+        "at_medium",
+        "at_campaign",
+        "utm_source",
+        "utm_medium",
+        "utm_campaign",
+        "utm_term",
+        "utm_content",
+        "fbclid",
+        "gclid",
+    }
+
+    query_pairs = parse_qsl(parts.query, keep_blank_values=True)
+    kept_pairs = [(k, v) for k, v in query_pairs if k not in drop_params]
+    kept_pairs.sort()
+    query = urlencode(kept_pairs)
+
+    return urlunsplit((scheme, netloc, path, query, ""))
+
+
+def deduplicate_articles(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Remove duplicate articles using canonical links first, then a fallback.
+    Keeps the best row available.
+    """
+    df = df.copy()
+
+    if "link" in df.columns:
+        df["canonical_link"] = df["link"].apply(canonicalize_link)
+    else:
+        df["canonical_link"] = pd.NA
+
+    # Prefer rows with a real author and longer text
+    if "author" in df.columns:
+        df["author_quality"] = (
+            df["author"].fillna("Unknown").astype(str).str.strip().ne("Unknown")
+        ).astype(int)
+    else:
+        df["author_quality"] = 0
+
+    if "full_text" in df.columns:
+        df["text_length_rank"] = df["full_text"].fillna("").astype(str).str.len()
+    else:
+        df["text_length_rank"] = 0
+
+    # Best rows first
+    df = df.sort_values(by=["author_quality", "text_length_rank"], ascending=[False, False])
+
+    # Primary dedupe by canonical URL
+    if "canonical_link" in df.columns:
+        df = df.drop_duplicates(subset=["canonical_link"], keep="first")
+
+    # Fallback dedupe for same story if URL missing/odd
+    fallback_cols = [c for c in ["title", "publisher", "published_date"] if c in df.columns]
+    if fallback_cols:
+        df = df.drop_duplicates(subset=fallback_cols, keep="first")
+
+    df = df.drop(columns=["author_quality", "text_length_rank"], errors="ignore")
+    return df
+
+
+# =========================
 # Main pipeline
 # =========================
 def main():
@@ -565,6 +671,11 @@ def main():
         if col in df.columns:
             df[col] = df[col].apply(clean_text)
 
+    # Create truncated text columns
+    if "full_text" in df.columns:
+        df["start_text"] = df["full_text"].apply(lambda x: truncate_text_by_words(x, 300))
+        df["half_text"] = df["full_text"].apply(lambda x: truncate_text_by_words(x, 600))
+
     # Publisher-specific author cleaning
     if "author" in df.columns and "publisher" in df.columns:
         df["author"] = df.apply(clean_author_by_publisher, axis=1)
@@ -573,6 +684,28 @@ def main():
 
     # FOX lengths
     df = update_fox_lengths(df)
+
+    # Recalculate article word count from full_text for all rows
+    if "full_text" in df.columns:
+        df["article_word_count"] = df["full_text"].apply(count_words).astype("Int64")
+
+    # Create truncated text columns
+    if "full_text" in df.columns:
+        df["start_text"] = df["full_text"].apply(lambda x: truncate_text_by_words(x, 300))
+        df["half_text"] = df["full_text"].apply(lambda x: truncate_text_by_words(x, 600))
+
+    # Remove low-content articles
+    if "article_word_count" in df.columns:
+        before_rows = len(df)
+        df = df[df["article_word_count"] > 50].copy()
+        after_rows = len(df)
+        print(f"Removed {before_rows - after_rows} articles with 50 or fewer words.")
+
+    # Remove duplicate articles
+    before_dedup = len(df)
+    df = deduplicate_articles(df)
+    after_dedup = len(df)
+    print(f"Removed {before_dedup - after_dedup} duplicate articles.")
 
     # Problem chars after
     if "full_text" in df.columns:

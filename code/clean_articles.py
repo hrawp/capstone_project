@@ -650,6 +650,49 @@ def deduplicate_articles(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
+def split_into_sentences(text):
+    """
+    Basic sentence splitter using punctuation.
+    Keeps things lightweight (no extra libraries).
+    """
+    if pd.isna(text):
+        return []
+
+    text = str(text).strip()
+
+    # Split on sentence-ending punctuation
+    sentences = re.split(r'(?<=[.!?])\s+', text)
+
+    # Clean and remove empty
+    return [s.strip() for s in sentences if s.strip()]
+
+
+def truncate_text_by_sentence_words(text, max_words):
+    """
+    Build text up to max_words WITHOUT breaking sentences.
+    Stops before exceeding the limit.
+    """
+    if pd.isna(text):
+        return pd.NA
+
+    sentences = split_into_sentences(text)
+
+    selected_sentences = []
+    word_count = 0
+
+    for sentence in sentences:
+        sentence_word_count = len(sentence.split())
+
+        # If adding this sentence would exceed limit → stop
+        if word_count + sentence_word_count > max_words:
+            break
+
+        selected_sentences.append(sentence)
+        word_count += sentence_word_count
+
+    return " ".join(selected_sentences)
+
+
 # =========================
 # Main pipeline
 # =========================
@@ -671,11 +714,6 @@ def main():
         if col in df.columns:
             df[col] = df[col].apply(clean_text)
 
-    # Create truncated text columns
-    if "full_text" in df.columns:
-        df["start_text"] = df["full_text"].apply(lambda x: truncate_text_by_words(x, 300))
-        df["half_text"] = df["full_text"].apply(lambda x: truncate_text_by_words(x, 600))
-
     # Publisher-specific author cleaning
     if "author" in df.columns and "publisher" in df.columns:
         df["author"] = df.apply(clean_author_by_publisher, axis=1)
@@ -689,10 +727,10 @@ def main():
     if "full_text" in df.columns:
         df["article_word_count"] = df["full_text"].apply(count_words).astype("Int64")
 
-    # Create truncated text columns
+    # Create truncated text columns (sentence-aware)
     if "full_text" in df.columns:
-        df["start_text"] = df["full_text"].apply(lambda x: truncate_text_by_words(x, 300))
-        df["half_text"] = df["full_text"].apply(lambda x: truncate_text_by_words(x, 600))
+        df["start_text"] = df["full_text"].apply(lambda x: truncate_text_by_sentence_words(x, 300))
+        df["half_text"] = df["full_text"].apply(lambda x: truncate_text_by_sentence_words(x, 600))
 
     # Remove low-content articles
     if "article_word_count" in df.columns:

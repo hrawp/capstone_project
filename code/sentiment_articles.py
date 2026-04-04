@@ -283,7 +283,7 @@ def process_keyword(df, key, compiled_patterns, sentiment_model):
 
         if count == 0:
             df.at[idx, count_col] = 0
-            df.at[idx, score_col] = pd.NA
+            df.at[idx, score_col] = 0.0
             df.at[idx, sentiment_col] = "no matches"
         else:
             avg_score = round(sum(scores) / len(scores), 4)

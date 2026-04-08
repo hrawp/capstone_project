@@ -11,78 +11,6 @@ resolution-markers = [
 ]
 
 [[package]]
-name = "analytics-project"
-version = "0.0.1"
-source = { editable = "." }
-dependencies = [
-    { name = "beautifulsoup4" },
-    { name = "feedparser" },
-    { name = "ftfy" },
-    { name = "ipykernel" },
-    { name = "ipython" },
-    { name = "loguru" },
-    { name = "lxml" },
-    { name = "lxml-html-clean" },
-    { name = "matplotlib" },
-    { name = "newspaper3k" },
-    { name = "numpy" },
-    { name = "pandas" },
-    { name = "pre-commit" },
-    { name = "requests" },
-    { name = "schedule" },
-    { name = "scikit-learn" },
-    { name = "seaborn" },
-    { name = "torch" },
-    { name = "transformers" },
-]
-
-[package.optional-dependencies]
-dev = [
-    { name = "pytest" },
-    { name = "pytest-cov" },
-]
-docs = [
-    { name = "livereload" },
-    { name = "mkdocs" },
-    { name = "mkdocs-material" },
-    { name = "mkdocstrings", extra = ["python"] },
-    { name = "ruff" },
-    { name = "watchdog" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "beautifulsoup4", specifier = ">=4.14.3" },
-    { name = "feedparser", specifier = ">=6.0.12" },
-    { name = "ftfy", specifier = ">=6.3.1" },
-    { name = "ipykernel" },
-    { name = "ipython" },
-    { name = "livereload", marker = "extra == 'docs'" },
-    { name = "loguru" },
-    { name = "lxml", specifier = ">=6.0.2" },
-    { name = "lxml-html-clean", specifier = ">=0.4.4" },
-    { name = "matplotlib" },
-    { name = "mkdocs", marker = "extra == 'docs'" },
-    { name = "mkdocs-material", marker = "extra == 'docs'" },
-    { name = "mkdocstrings", extras = ["python"], marker = "extra == 'docs'" },
-    { name = "newspaper3k", specifier = ">=0.2.8" },
-    { name = "numpy" },
-    { name = "pandas" },
-    { name = "pre-commit", specifier = ">=4.5.1" },
-    { name = "pytest", marker = "extra == 'dev'" },
-    { name = "pytest-cov", marker = "extra == 'dev'" },
-    { name = "requests", specifier = ">=2.32.5" },
-    { name = "ruff", marker = "extra == 'docs'" },
-    { name = "schedule", specifier = ">=1.2.2" },
-    { name = "scikit-learn" },
-    { name = "seaborn" },
-    { name = "torch", specifier = ">=2.10.0" },
-    { name = "transformers", specifier = ">=5.3.0" },
-    { name = "watchdog", marker = "extra == 'docs'" },
-]
-provides-extras = ["dev", "docs"]
-
-[[package]]
 name = "annotated-doc"
 version = "0.0.4"
 source = { registry = "https://pypi.org/simple" }
@@ -157,6 +85,78 @@ sdist = { url = "https://files.pythonhosted.org/packages/c3/b0/1c6a16426d389813b
 wheels = [
     { url = "https://files.pythonhosted.org/packages/1a/39/47f9197bdd44df24d67ac8893641e16f386c984a0619ef2ee4c51fbbc019/beautifulsoup4-4.14.3-py3-none-any.whl", hash = "sha256:0918bfe44902e6ad8d57732ba310582e98da931428d231a5ecb9e7c703a735bb", size = 107721, upload-time = "2025-11-30T15:08:24.087Z" },
 ]
+
+[[package]]
+name = "capstone-project"
+version = "0.0.1"
+source = { editable = "." }
+dependencies = [
+    { name = "beautifulsoup4" },
+    { name = "feedparser" },
+    { name = "ftfy" },
+    { name = "ipykernel" },
+    { name = "ipython" },
+    { name = "loguru" },
+    { name = "lxml" },
+    { name = "lxml-html-clean" },
+    { name = "matplotlib" },
+    { name = "newspaper3k" },
+    { name = "numpy" },
+    { name = "pandas" },
+    { name = "pre-commit" },
+    { name = "requests" },
+    { name = "schedule" },
+    { name = "scikit-learn" },
+    { name = "seaborn" },
+    { name = "torch" },
+    { name = "transformers" },
+]
+
+[package.optional-dependencies]
+dev = [
+    { name = "pytest" },
+    { name = "pytest-cov" },
+]
+docs = [
+    { name = "livereload" },
+    { name = "mkdocs" },
+    { name = "mkdocs-material" },
+    { name = "mkdocstrings", extra = ["python"] },
+    { name = "ruff" },
+    { name = "watchdog" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "beautifulsoup4", specifier = ">=4.14.3" },
+    { name = "feedparser", specifier = ">=6.0.12" },
+    { name = "ftfy", specifier = ">=6.3.1" },
+    { name = "ipykernel" },
+    { name = "ipython" },
+    { name = "livereload", marker = "extra == 'docs'" },
+    { name = "loguru" },
+    { name = "lxml", specifier = ">=6.0.2" },
+    { name = "lxml-html-clean", specifier = ">=0.4.4" },
+    { name = "matplotlib" },
+    { name = "mkdocs", marker = "extra == 'docs'" },
+    { name = "mkdocs-material", marker = "extra == 'docs'" },
+    { name = "mkdocstrings", extras = ["python"], marker = "extra == 'docs'" },
+    { name = "newspaper3k", specifier = ">=0.2.8" },
+    { name = "numpy" },
+    { name = "pandas" },
+    { name = "pre-commit", specifier = ">=4.5.1" },
+    { name = "pytest", marker = "extra == 'dev'" },
+    { name = "pytest-cov", marker = "extra == 'dev'" },
+    { name = "requests", specifier = ">=2.32.5" },
+    { name = "ruff", marker = "extra == 'docs'" },
+    { name = "schedule", specifier = ">=1.2.2" },
+    { name = "scikit-learn" },
+    { name = "seaborn" },
+    { name = "torch", specifier = ">=2.10.0" },
+    { name = "transformers", specifier = ">=5.3.0" },
+    { name = "watchdog", marker = "extra == 'docs'" },
+]
+provides-extras = ["dev", "docs"]
 
 [[package]]
 name = "certifi"
@@ -669,6 +669,7 @@ wheels = [
 name = "griffelib"
 version = "2.0.0"
 source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/ad/06/eccbd311c9e2b3ca45dbc063b93134c57a1ccc7607c5e545264ad092c4a9/griffelib-2.0.0.tar.gz", hash = "sha256:e504d637a089f5cab9b5daf18f7645970509bf4f53eda8d79ed71cce8bd97934", size = 166312, upload-time = "2026-03-23T21:06:55.954Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/4d/51/c936033e16d12b627ea334aaaaf42229c37620d0f15593456ab69ab48161/griffelib-2.0.0-py3-none-any.whl", hash = "sha256:01284878c966508b6d6f1dbff9b6fa607bc062d8261c5c7253cb285b06422a7f", size = 142004, upload-time = "2026-02-09T19:09:40.561Z" },
 ]

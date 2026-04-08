@@ -14,8 +14,8 @@ classifiers = [
   "Programming Language :: Python :: 3 :: Only",
   "Programming Language :: Python :: 3.12",
 ]
-description = "Applied ML Template"
-name = "analytics-project" # PACKAGE name (matches src folder except with dashes)
+description = "Capstone Project"
+name = "capstone-project" # PACKAGE name (matches src folder except with dashes)
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.12"

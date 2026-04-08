@@ -287,7 +287,7 @@ def process_keyword(df, key, compiled_patterns, sentiment_model):
             df.at[idx, sentiment_col] = "no matches"
         else:
             avg_score = round(sum(scores) / len(scores), 4)
-            df.at[idx, count_col] = count
+            df.at[idx, count_col] = 1
             df.at[idx, score_col] = avg_score
             df.at[idx, sentiment_col] = classify_sentiment(avg_score)
 

@@ -1,3 +1,10 @@
+This is just the intial way to setup the project.
+Actual code, paper and notebooks are in the following folders:
+•	Project Code: https://github.com/hrawp/capstone_project/tree/main/code
+•	Notebooks: https://github.com/hrawp/capstone_project/tree/main/notebooks
+•	Paper: https://github.com/hrawp/capstone_project/tree/main/docs 
+
+
 # applied-ml-template
 
 > Use this repo to start a professional Python project.
